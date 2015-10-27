@@ -28,19 +28,20 @@ override_dh_builddeb:
 override_dh_auto_install:
 	install -d -m 0755 debian/python-baobab/usr/share/baobab/
 	install -d -m 0755 $(NPM_CONFIG_CACHE)
-	
+
 	if [ ! -z $$NPM_CONFIG_REGISTRY ]; then \
             cp npm-shrinkwrap.json npm-shrinkwrap.json.backup; \
 	    sed -i -e "s,https://registry.npmjs.org,$$NPM_CONFIG_REGISTRY,g" \
 	        npm-shrinkwrap.json; \
 	fi
-	
-	npm install
-	npm run release
+
+	npm install npm@latest-2
+	./node_modules/.bin/npm install
+	./node_modules/.bin/npm run release
 	cp -rf baobab/static/* debian/python-baobab/usr/share/baobab/
 	dh_auto_install
 	find debian/python-baobab -type f -iname "*.js" -exec chmod 0644 {} \;
-	
+
 	if [ -e npm-shrinkwrap.json.backup ]; then \
 	    mv -f npm-shrinkwrap.json.backup npm-shrinkwrap.json ; \
 	fi
